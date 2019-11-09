@@ -8,7 +8,7 @@ Follows instructions of custom cards installation from https://github.com/ioBrok
 ## Entity settings
 
 following settings of entity are supported:
-`
+
 type: 'custom:weather-card'
 entity: weather.Weather_Summary - your weather entity
 name:  - card name, e.g. your location
@@ -19,7 +19,7 @@ waterunit:  - unit of precipitation amount to be displayed, e.g. mm
 convertspeedtoms: - true to convert wind speed from km/h to m/s
 convertpressuretomm: - true to convert pressure from hPa to mmHg
 convertemptof: true to convert degrees C to F
-`
+
 ### Example
 
 Card loks like:
