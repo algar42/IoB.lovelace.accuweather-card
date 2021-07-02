@@ -106,7 +106,7 @@ class WeatherCard extends LitElement {
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
         ${this._config.name ? html`<span class="title"> ${this._config.name} </span>`: ""}
-        <div  class="bigicon"  style="background: none, url(${stateObj.attributes.icon}) no-repeat center center; background-size: contain;"> </div>
+        <div  class="bigicon"  style="background: none, url(${stateObj.attributes.icon_url}) no-repeat center center; background-size: contain;"> </div>
         ${stateObj.state  ? html`<div class="condition">${stateObj.state}</div>`  : ""  }
         <span class="temp">${this.getTemperature(stateObj.attributes.temperature)}</span>
         <span class="tempc"> ${this.getUnit("temperature")}</span>
@@ -131,11 +131,11 @@ class WeatherCard extends LitElement {
         daily => html`
               <div class="column">
                 <div class="bydaytable-inner">
-                  <div class="row dayname"> ${new Date(daily.datetime).toLocaleDateString(lang, { weekday: "short" })} </div>
-                  <div class="row"> <i class="icon" style="background: none, url(${daily.icon}) no-repeat; background-size: contain;"></i> </div> 
-                  <div class="row highTemp"> ${this.getTemperature(daily.temperature)}${this.getUnit("temperature")} </div>
-                  ${ daily.templow ?  html`<div class="lowTemp">${this.getTemperature(daily.templow)}${this.getUnit("temperature")}</div>` : html`<div class="lowTemp">&nbsp;</div>` }
-                  ${ daily.precipitation ?  html`<div class="row"><ha-icon class="ha-icon-small" icon="mdi:water"></ha-icon><span class="precip">${daily.precipitation} ${this.getUnit("precip")}</span></div>` : html`<div class="row precip">&nbsp;</div>` } 
+                  <div class="row dayname"> ${new Date(forecast.datetime).toLocaleDateString(lang, { weekday: "short" })} </div>
+                  <div class="row"> <i class="icon" style="background: none, url(${forecast.icon}) no-repeat; background-size: contain;"></i> </div> 
+                  <div class="row highTemp"> ${this.getTemperature(forecast.temperature)}${this.getUnit("temperature")} </div>
+                  ${ forecast.templow ?  html`<div class="lowTemp">${this.getTemperature(forecast.templow)}${this.getUnit("temperature")}</div>` : html`<div class="lowTemp">&nbsp;</div>` }
+                  ${ forecast.precipitation ?  html`<div class="row"><ha-icon class="ha-icon-small" icon="mdi:water"></ha-icon><span class="precip">${forecast.precipitation} ${this.getUnit("precip")}</span></div>` : html`<div class="row precip">&nbsp;</div>` } 
 
                 </div>
               </div>
