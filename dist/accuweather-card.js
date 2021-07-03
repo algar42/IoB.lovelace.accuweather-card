@@ -80,6 +80,23 @@ class WeatherCard extends LitElement {
     }
   }
 
+  getCardinalDirection(angle) {
+		if (typeof angle === "string") {
+			angle = parseInt(angle);
+		}
+		if (angle <= 0 || angle > 360 || typeof angle === "undefined") {
+			return "☈";
+		}
+		const arrows = { north: "↑N", north_east: "↗NE", east: "→E", south_east: "↘SE", south: "↓S", south_west: "↙SW", west: "←W", north_west: "↖NW" };
+		const directions = Object.keys(arrows);
+		const degree = 360 / directions.length;
+		angle = angle + degree / 4;
+		for (let i = 0; i < directions.length; i++) {
+			if (angle >= (i * degree) && angle < (i + 1) * degree) return arrows[directions[i]];
+		}
+		return arrows["north"];
+	}
+
   render() {
     if (!this._config || !this.hass) {
       return html`<div> Weather not defined </div>`;
@@ -87,7 +104,7 @@ class WeatherCard extends LitElement {
 
     const stateObj = this.hass.states[this._config.entity];
     const lang = this.hass.config.language || this.hass.selectedLanguage || this.hass.language;
-    console.log(stateObj.state);
+    console.log(stateObj);
 
     const next_rising = new Date(stateObj.attributes.sunrise);
     const next_setting = new Date(stateObj.attributes.sunset);
@@ -106,36 +123,36 @@ class WeatherCard extends LitElement {
       ${this.renderStyle()}
       <ha-card @click="${this._handleClick}">
         ${this._config.name ? html`<span class="title"> ${this._config.name} </span>`: ""}
-        <div  class="bigicon"  style="background: none, url(${stateObj.attributes.icon_url}) no-repeat center center; background-size: contain;"> </div>
-        ${stateObj.state  ? html`<div class="condition">${stateObj.state}</div>`  : ""  }
+        <div  class="bigicon"  style="background: none, url(${stateObj.state}) no-repeat center center; background-size: contain;"> </div>
+        
         <span class="temp">${this.getTemperature(stateObj.attributes.temperature)}</span>
         <span class="tempc"> ${this.getUnit("temperature")}</span>
         <span>
           <ul class="variations">
             <li>
               <span class="ha-icon"><ha-icon style="visibility: hidden;" icon="mdi:weather-windy"></span>
-              <br /><span class="ha-icon"><ha-icon icon="mdi:weather-windy"></ha-icon></span> ${stateObj.attributes.wind_bearing}
+              <br /><span class="ha-icon"><ha-icon icon="mdi:weather-windy"></ha-icon></span> ${this.getCardinalDirection(stateObj.attributes.wind_bearing)}
               ${this.getWindspeed()}<span class="unit"> ${this.getUnit("speed")}</span>
-              <br /> <span class="ha-icon"><ha-icon icon="mdi:weather-sunset-up"></ha-icon></span>${next_rising.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}
+              
             </li>
             <li>
               <span class="ha-icon"><ha-icon icon="mdi:water-percent"></ha-icon></span> ${stateObj.attributes.humidity}<span class="unit"> %</span>
               <br /><span class="ha-icon"><ha-icon icon="mdi:gauge"></ha-icon></span>${this.getPressure()}<span class="unit"> ${this.getUnit("air_pressure")}</span>
-              <br /><span class="ha-icon"><ha-icon icon="mdi:weather-sunset-down"></ha-icon></span>${next_setting.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}
+              
             </li>
           </ul>
         </span>
         <div class="bydaytable clear">
           ${
-      stateObj.attributes.forecast.slice(0, 5).map(
-        daily => html`
+      stateObj.attributes.forecast.slice(0, 4).map(
+        (daily, id) => html`
               <div class="column">
                 <div class="bydaytable-inner">
-                  <div class="row dayname"> ${new Date(forecast.datetime).toLocaleDateString(lang, { weekday: "short" })} </div>
-                  <div class="row"> <i class="icon" style="background: none, url(${forecast.icon}) no-repeat; background-size: contain;"></i> </div> 
-                  <div class="row highTemp"> ${this.getTemperature(forecast.temperature)}${this.getUnit("temperature")} </div>
-                  ${ forecast.templow ?  html`<div class="lowTemp">${this.getTemperature(forecast.templow)}${this.getUnit("temperature")}</div>` : html`<div class="lowTemp">&nbsp;</div>` }
-                  ${ forecast.precipitation ?  html`<div class="row"><ha-icon class="ha-icon-small" icon="mdi:water"></ha-icon><span class="precip">${forecast.precipitation} ${this.getUnit("precip")}</span></div>` : html`<div class="row precip">&nbsp;</div>` } 
+                  <div class="row dayname"> ${new Date(daily.datetime).toLocaleDateString(lang, { weekday: "short" })} </div>
+                  <div class="row"> <i class="icon" style="background: none, url(${daily.condition}) no-repeat; background-size: contain;"></i> </div> 
+                  <div class="row highTemp"> ${this.getTemperature(daily.temperature)}${this.getUnit("temperature")} </div>
+                  ${ daily.templow ?  html`<div class="lowTemp">${this.getTemperature(daily.templow)}${this.getUnit("temperature")}</div>` : html`<div class="lowTemp">&nbsp;</div>` }
+                  ${ daily.precipitation ?  html`<div class="row"><ha-icon class="ha-icon-small" icon="mdi:water"></ha-icon><span class="precip">${daily.precipitation} ${this.getUnit("precip")}</span></div>` : html`<div class="row precip">&nbsp;</div>` } 
 
                 </div>
               </div>
@@ -187,7 +204,7 @@ class WeatherCard extends LitElement {
       }
 
        .column {
-        width: 20%;
+        width: 25%;
         text-align: center;
         border-right: 0.1em solid #d9d9d9;
         box-sizing: border-box;
@@ -267,11 +284,11 @@ class WeatherCard extends LitElement {
 
         .temp {
           font-weight: 300;
-          font-size: 4em;
+          font-size: 3.5em;
           color: var(--primary-text-color);
           position: absolute;
           right: 0.6em;
-          margin-top: -0.2em;
+          margin-top: 0.2em;
         }
 
         .tempc {
@@ -397,3 +414,4 @@ class WeatherCard extends LitElement {
   }
 }
 customElements.define("weather-card", WeatherCard);
+
