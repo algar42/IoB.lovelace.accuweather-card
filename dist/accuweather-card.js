@@ -124,7 +124,7 @@ class WeatherCard extends LitElement {
       <ha-card @click="${this._handleClick}">
         ${this._config.name ? html`<span class="title"> ${this._config.name} </span>`: ""}
         <div  class="bigicon"  style="background: none, url(${stateObj.state}) no-repeat center center; background-size: contain;"> </div>
-        
+        ${stateObj.attributes.state_desc ? html`<div class="condition">${stateObj.attributes.state_desc}</div>` : "Unknown" }
         <span class="temp">${this.getTemperature(stateObj.attributes.temperature)}</span>
         <span class="tempc"> ${this.getUnit("temperature")}</span>
         <span>
@@ -133,12 +133,12 @@ class WeatherCard extends LitElement {
               <span class="ha-icon"><ha-icon style="visibility: hidden;" icon="mdi:weather-windy"></span>
               <br /><span class="ha-icon"><ha-icon icon="mdi:weather-windy"></ha-icon></span> ${this.getCardinalDirection(stateObj.attributes.wind_bearing)}
               ${this.getWindspeed()}<span class="unit"> ${this.getUnit("speed")}</span>
-              
+              <br /> <span class="ha-icon"><ha-icon icon="mdi:weather-sunset-up"></ha-icon></span>${next_rising.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}
             </li>
             <li>
               <span class="ha-icon"><ha-icon icon="mdi:water-percent"></ha-icon></span> ${stateObj.attributes.humidity}<span class="unit"> %</span>
               <br /><span class="ha-icon"><ha-icon icon="mdi:gauge"></ha-icon></span>${this.getPressure()}<span class="unit"> ${this.getUnit("air_pressure")}</span>
-              
+              <br /><span class="ha-icon"><ha-icon icon="mdi:weather-sunset-down"></ha-icon></span>${next_setting.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', hour12: false})}
             </li>
           </ul>
         </span>
@@ -238,7 +238,7 @@ class WeatherCard extends LitElement {
           margin: auto;
           width: 100%;
           height: 300px;
-          min-width: 390px;
+          min-width: 300px;
           padding-top: 1.5em;
           padding-bottom: 0em;
           padding-left: 0em;
@@ -265,9 +265,9 @@ class WeatherCard extends LitElement {
         .title {
           position: absolute;
           left: 0.5em;
-          top: 0.6em;
+          top: 0.5em;
           font-weight: 300;
-          font-size: 1.5em;
+          font-size: 1.4em;
           color: var(--primary-text-color);
         }
 
@@ -284,11 +284,11 @@ class WeatherCard extends LitElement {
 
         .temp {
           font-weight: 300;
-          font-size: 3.5em;
+          font-size: 4.2em;
           color: var(--primary-text-color);
           position: absolute;
           right: 0.6em;
-          margin-top: 0.2em;
+          margin-top: 0.25em;
         }
 
         .tempc {
@@ -373,10 +373,10 @@ class WeatherCard extends LitElement {
 
         .bigicon {
           position: absolute;
-          top: 1.5em;
+          top: 1.55em;
           left: 33%;
-          width: 38%;
-          height: 38%;
+          width: 37%;
+          height: calc(290px - 55%);
           vertical-align: center;
           align-content: center;
           text-align: center;
@@ -414,4 +414,3 @@ class WeatherCard extends LitElement {
   }
 }
 customElements.define("weather-card", WeatherCard);
-
